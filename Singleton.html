@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="theme-color" content="#000000">
+    <title>单利模式</title>
+</head>
+
+<body>
+    <div>
+        单例模式的定义是：保证一个类仅有一个实例，并提供一个访问它的全局访问点
+    </div>
+    <script>
+        // 1.使用闭包的形式创建
+        var CreateDiv = (function () {
+            var instance
+            return Single = function (name) {
+                this.name = name
+                if (instance) {
+                    return instance
+                } else {
+                    instance = this.init()
+                }
+            }
+
+            Single.property.init = function (name) {
+                var div = document.createElement('div');
+                div.innerHTML = this.html;
+                document.body.appendChild(div);
+            }
+        }())
+
+        var div1 = new CreateDiv('div1')
+        var div2 = new CreateDiv('div2')
+
+        // 2.使用代理的方式
+        var CreateDiv = function (html) {
+            this.html = html
+            this.init()
+        }
+
+        CreateDiv.prototype.init = function () {
+            var div = document.createElement('div');
+            div.innerHTML = this.html;
+            document.body.appendChild(div);
+        }
+
+        var ProxySingletonCreateDiv = (function () {
+            var instance
+            return function (html) {
+                if (!instance) {
+                    instance = new CreateDiv(html)
+                }
+                return instance
+            }
+        })()
+
+        var a = new ProxySingletonCreateDiv('sven1');
+        var b = new ProxySingletonCreateDiv('sven2');
+
+        //3.通用模式
+        var getSingle = function (fn) {
+            var result
+            return function () {
+                return result || (result = fn.apply(this, arguments))
+            }
+        }
+
+        var createLoginLayer = function () {
+            var div = document.createElement('div');
+            div.innerHTML = '我是登录浮窗';
+            div.style.display = 'none';
+            document.body.appendChild(div);
+            return div;
+        };
+        var createSingleLoginLayer = getSingle(createLoginLayer);
+        document.getElementById('loginBtn').onclick = function () {
+            var loginLayer = createSingleLoginLayer();
+            loginLayer.style.display = 'block';
+        };
+    </script>
+</body>
+
+</html>
