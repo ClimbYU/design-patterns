@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="theme-color" content="#000000">
+    <title>装饰者模式</title>
+</head>
+
+<body>
+    <div>
+        装饰者模式可以动态地 给某个对象添加一些额外的职责，而不会影响从这个类中派生的其他对象。
+        装饰者模式能够在不改 变对象自身的基础上，在程序运行期间给对象动态地添加职责
+    </div>
+    <script>
+        // 简但了解下
+
+        var Plan = function () { }
+
+        Plan.prototype.fire = function () {
+            console.log('plan')
+        }
+
+        var PlanA = function (plan) {
+            this.plan = plan
+        }
+
+        PlanA.prototype.fire = function () {
+            this.plan.fire()
+            console.log("plan A")
+        }
+
+        var PlanB = function (plan) {
+            this.plan = plan
+        }
+
+        PlanB.prototype.fire = function () {
+            this.plan.fire()
+            console.log("plan B")
+        }
+
+        var plan = new Plan()
+
+        plan = new PlanA(plan)
+
+        plan = new PlanB(plan)
+
+        plan.fire()
+
+
+        // 对象形式装饰
+        var plane = {
+            fire: function () {
+                console.log('发射普通子弹');
+            }
+        }
+        var missileDecorator = function () {
+            console.log('发射导弹');
+        }
+        var atomDecorator = function () {
+            console.log('发射原子弹');
+        }
+        var fire1 = plane.fire;
+        plane.fire = function () {
+            fire1();
+            missileDecorator();
+        }
+        var fire2 = plane.fire;
+        plane.fire = function () {
+            fire2();
+            atomDecorator();
+        }
+        plane.fire();
+
+        //用 AOP 装饰函数Function.prototype.before(after) 接受一个函数当作参数，这个函数即为新添加的函数，它装载了新添加的功能代码。
+        // 接下来把当前的 this 保存起来，这个 this 指向原函数，然后返回一个“代理”函数，这个
+        // “代理”函数只是结构上像代理而已，并不承担代理的职责（比如控制对象的访问等）。它的工作
+        // 是把请求分别转发给新添加的函数和原函数，且负责保证它们的执行顺序，让新添加的函数在原
+        // 函数之前(后)执行（前置装饰），这样就实现了动态装饰的效果。
+
+        Function.prototype.befroe = function (befroefn) {
+            var _self = this
+            return function () {
+                befroefn.apply(this, arguments)
+                return _self.apply(this, arguments)
+            }
+        }
+
+        Function.prototype.after = function (afterfn) {
+            var _self = this
+            return function () {
+                _self.apply(this, arguments)
+                let ret = afterfn.apply(this, arguments)
+
+                return ret;
+            }
+        }
+        // 值得提到的是，上面的 AOP 实现是在 Function.prototype 上添加 before 和 after 方法，但许
+        // 多人不喜欢这种污染原型的方式，那么我们可以做一些变通，把原函数和新函数都作为参数传入
+        // before 或者 after 方法：
+        var before = function (fn, beforefn) {
+            return function () {
+                beforefn.apply(this, arguments);
+                return fn.apply(this, arguments);
+            }
+        }
+        var a = before(
+            function () { alert(3) },
+            function () { alert(2) }
+        );
+        a = before(a, function () { alert(1); });
+        a();
+    </script>
+</body>
+
+</html>
