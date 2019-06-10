@@ -37,7 +37,7 @@
         proxyImage = (function () {
             var image = new Image
             image.onload = function () {
-                imageNode.src = this.src
+                imageNode.src = this.src //imageNode实际要加载图片的对象
             }
 
             return {
