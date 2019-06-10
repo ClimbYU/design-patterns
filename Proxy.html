@@ -21,35 +21,28 @@
         **/
 
 
-        imageNode = (function () {
-            var myImage = document.createElement('img')
-            document.body.appendChild(myImage);
-
-            return {
-                setSrc: function (src) {
-                    imgNode.src = src;
-                }
-            }
-
-
-        })()
-
-        proxyImage = (function () {
-            var image = new Image
-            image.onload = function () {
-                imageNode.src = this.src //imageNode实际要加载图片的对象
-            }
-
-            return {
-                setSrc: function (src) {
-                    img.src = src;
-                    imageNode.setRrc('本地图片地址')
-                }
-            }
-        })()
-
-
-        proxyImage.setSrc('http:// imgcache.qq.com/music/photo/k/000GGDys0yA0Nk.jpg');
+        var myImage = (function(){ 
+         var imgNode = document.createElement( 'img' ); 
+         document.body.appendChild( imgNode ); 
+         return { 
+            setSrc: function( src ){ 
+              imgNode.src = src; 
+             } 
+         } 
+        })(); 
+         var proxyImage = (function(){ 
+             var img = new Image; 
+             img.onload = function(){ 
+              myImage.setSrc( this.src ); 
+             } 
+             return { 
+              setSrc: function( src ){ 
+                  myImage.setSrc( 'file:// /C:/Users/svenzeng/Desktop/loading.gif' ); 
+                  img.src = src; 
+               } 
+             } 
+        })(); 
+        proxyImage.setSrc( 'http:// imgcache.qq.com/music/photo/k/000GGDys0yA0Nk.jpg' );
 
         // 懒加载js
         var miniConsole = (function () {
